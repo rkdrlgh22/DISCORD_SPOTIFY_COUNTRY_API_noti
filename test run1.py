@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands, tasks
 import requests
+import os
 
-TOKEN = 'DISCORD TOKEN'
-CHANNEL_ID = CHANNEL_ID  # 메시지를 보낼 채널 ID
+TOKEN = 'DISCORD_TOKEN'
+CHANNEL_ID = DISCORD_CHANNEL_ID  # 메시지를 보낼 채널 ID
 
-# 90개 국가의 국기 이모티콘
+# 90개 국가의 국기 이모티콘 (flags dictionary)
 FLAGS = {
     "Argentina": "🇦🇷",
     "Australia": "🇦🇺",
@@ -55,69 +56,30 @@ FLAGS = {
     "Thailand": "🇹🇭",
     "Turkey": "🇹🇷",
     "United Kingdom": "🇬🇧",
-    "United States": "🇺🇸",
-    "Vietnam": "🇻🇳",
-    "Nigeria": "🇳🇬",
-    "Kenya": "🇰🇪",
-    "Bangladesh": "🇧🇩",
-    "Pakistan": "🇵🇰",
-    "Peru": "🇵🇪",
-    "Ukraine": "🇺🇦",
-    "Venezuela": "🇻🇪",
-    "Romania": "🇷🇴",
-    "Serbia": "🇷🇸",
-    "Croatia": "🇭🇷",
-    "Bulgaria": "🇧🇬",
-    "Slovakia": "🇸🇰",
-    "Slovenia": "🇸🇮",
-    "Estonia": "🇪🇪",
-    "Lithuania": "🇱🇹",
-    "Latvia": "🇱🇻",
-    "Luxembourg": "🇱🇺",
-    "Cyprus": "🇨🇾",
-    "Malta": "🇲🇹",
-    "Georgia": "🇬🇪",
-    "Azerbaijan": "🇦🇿",
-    "Armenia": "🇦🇲",
-    "Kazakhstan": "🇰🇿",
-    "Uzbekistan": "🇺🇿",
-    "Kyrgyzstan": "🇰🇬",
-    "Turkmenistan": "🇹🇲",
-    "Tajikistan": "🇹🇯",
-    "Nepal": "🇳🇵",
-    "Sri Lanka": "🇱🇰",
-    "Myanmar": "🇲🇲",
-    "Laos": "🇱🇦",
-    "Cambodia": "🇰🇭",
-    "Brunei": "🇧🇳",
-    "Mongolia": "🇲🇳",
-    "Papua New Guinea": "🇵🇬",
-    "Fiji": "🇫🇯",
-    "Solomon Islands": "🇸🇧",
-    "Vanuatu": "🇻🇺",
-    "Samoa": "🇼🇸"
-}
-
-bot = commands.Bot(command_prefix="!", intents=discord.Intents.default())
-
-@bot.event
-async def on_ready():
-    print(f'봇이 준비되었습니다! {bot.user}')
-    send_stock.start()  # 봇이 준비되면 반복 작업 시작
-
-@tasks.loop(hours=0.5)  # 0.5시간 마다 반복
-async def send_stock():
-    try:
-        response = requests.get# 스포티 파이 API 국가 체크 사이트('')
+    "United States": "🇺🇸트('')
+        response.raise_for_status()  # 잘못된 응답에 대해 예외 발생
         data = response.json()
         stock_message = ""
         for item in data:
             flag = FLAGS.get(item['country'], "")
             stock_message += f"{flag} '{item['country']}', 'slots': {item['slots']},\n"
-        stock_message = stock_message.rstrip(",\n") + ""  # 마지막 쉼표와 개행 문자 제거 후 닫는 중괄호 추가
-        channel = bot.get_channel(CHANNEL_ID)
-        await channel.send(stock_message)
-    except Exception as e:
-        print(f'재고 체크 중 오류 발생: {e}')
+        return stock_message.rstrip(",\n")  # 마지막 쉼표와 개행 문자 제거
+    except requests.RequestException as e:
+        print(f'API 요청 중 오류 발생: {e}')
+        return None
+
+@bot.event
+async def on_message(message):
+    # 봇 자신이 보낸 메시지는 무시
+    if message.author == bot.user:
+        return
+
+    # 멘션된 경우
+    if bot.user in message.mentions:
+        stock_message = await fetch_stock_data()
+        if stock_message:
+            await message.channel.send(stock_message)
+        else:
+            await message.channel.send('재고를 확인하는 중 오류가 발생했습니다.')
 
 bot.run(TOKEN)
