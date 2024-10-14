@@ -1,10 +1,15 @@
 aHR0cHM6Ly91cGdyYWRlci5jYy9pbmRleCNhcGk=
+
 이 사이트에서 재고 남으면 후다다닥 받을려고 만든거
 
 API 사이트
+
+
 aHR0cHM6Ly91cGdyYWRlci5jYy9BUEkvP3N0b2NrCg==
 
 딸깍한번에 사이트 들어가기
+
+
 aHR0cHM6Ly91cGdyYWRlci5jYy91cGdyYWRlIA==
 
 ### HOW TO?
