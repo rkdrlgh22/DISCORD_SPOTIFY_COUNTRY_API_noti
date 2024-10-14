@@ -20,3 +20,5 @@ CHANNEL_ID = CHANNEL_ID  # 메시지를 보낼 채널 ID
 
 이곳을 잘 수정
 ```response = requests.get('aHR0cHM6Ly91cGdyYWRlci5jYy9BUEkvP3N0b2NrCg==')```
+
+- @봇을 맨션하면 , 봇이 맨션듣고 재고량 알려줌
